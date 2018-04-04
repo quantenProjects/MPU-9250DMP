@@ -85,7 +85,7 @@ MPU9250 mpu;
 // on a remote host such as Processing or something though)
 #define OUTPUT_READABLE_QUATERNION
 
-// добавление вывода данных магнитометра датчика с помощью DMP
+// Add the output of sensor magnetometer data with DMP
 #define OUTPUT_COMPASS
 
 // uncomment "OUTPUT_READABLE_YAWPITCHROLL" if you want to see the yaw/
@@ -112,14 +112,14 @@ uint8_t devStatus;      // return status after each device operation (0 = succes
 uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 uint16_t fifoCount;     // count of all bytes currently in FIFO
 uint8_t fifoBuffer[64]; // FIFO storage buffer
-float f_mag[3];         // данные магнитометра после преобразования согласно даташиту
+float f_mag[3];         // magnetometer data after conversion according to the datasheet
 float d_mag[4];
 
 // orientation/motion vars
 Quaternion q;           // [w, x, y, z]         quaternion container
-// VectorFloat v_mag;      // [x, y, z]            вектор магнитного поля
-int16_t mag[3];         // сырые данные магнитометра
-Quaternion q_mag;       // вспомогательный кватернион магнитометра
+// VectorFloat v_mag;      // [x, y, z]            magnetic field vector
+int16_t mag[3];         // raw magnetometer data
+Quaternion q_mag;       // auxiliary quaternion of a magnetometer
 
 
 
@@ -281,18 +281,17 @@ void loop() {
         #endif
 
         #ifdef OUTPUT_COMPASS
-            // вывод данных магнитометра
-            mpu.dmpGetMag(mag, fifoBuffer);                     // получение сырых данных из DMP
-            f_mag[0] = mag[1]*((asax-128)*0.5/128+1);           // преобразование и
-            f_mag[1] = mag[0]*((asay-128)*0.5/128+1);           // замена ориантаций осей X,Y,Z по спецификации 
-            f_mag[2] = -mag[2]*((asax-128)*0.5/128+1);          // на датчик страница 38
-            VectorFloat v_mag(f_mag[0], f_mag[1], f_mag[2]);    // создаем вектор магнитометра
-            v_mag = v_mag.getNormalized();                      // нормализуем вектор
-            v_mag = v_mag.getRotated(&q_mag);                   // поворачиваем
-            float phi = atan2(v_mag.y, v_mag.x)/3.1416;         // получаем значения угла в радианах между X, Y
-            Quaternion q_mag(0.1*phi, 0, 0, 1);                 // создаем коррекционный кватернион
-            q = q_mag.getProduct(q);                            // перемножаем кватернионы для коррекции основного
-            q.normalize();                                      // нормализуем кватернион
+            // output of magnetometer data
+            mpu.dmpGetMag(mag, fifoBuffer);                     // obtaining raw data from DMP
+            f_mag[0] = mag[1]*((asax-128)*0.5/128+1);           // transformation and
+            f_mag[1] = mag[0]*((asay-128)*0.5/128+1);           // replacement of axes X, Y, Z axes according to specification 
+            f_mag[2] = -mag[2]*((asax-128)*0.5/128+1);          // on the sensor page 38
+            VectorFloat v_mag(f_mag[0], f_mag[1], f_mag[2]);    // create a magnetometer vector
+            v_mag = v_mag.getNormalized();                      // normalize vector
+            v_mag = v_mag.getRotated(&q_mag);                   // turn
+            float phi = atan2(v_mag.y, v_mag.x)/3.1416;         // we obtain the values of the angle in radians between X, Y
+            Quaternion q_mag(0.1*phi, 0, 0, 1);                 // create a corrective quaternion
+            q = q_mag.getProduct(q);                            // multiply the quaternions to correct the main
 
             Serial.println(quaterionsToYaw(q));
             /*
