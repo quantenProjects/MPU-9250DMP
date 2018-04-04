@@ -293,13 +293,16 @@ void loop() {
             Quaternion q_mag(0.1*phi, 0, 0, 1);                 // создаем коррекционный кватернион
             q = q_mag.getProduct(q);                            // перемножаем кватернионы для коррекции основного
             q.normalize();                                      // нормализуем кватернион
+
+            Serial.println(quaterionsToYaw(q));
+            /*
             Serial.print(q.w);
             Serial.print(",");
             Serial.print(q.x);
             Serial.print(",");
             Serial.print(q.y);
             Serial.print(",");
-            Serial.println(q.z);
+            Serial.println(q.z);*/
         #endif
 
         #ifdef OUTPUT_READABLE_YAWPITCHROLL
@@ -334,4 +337,16 @@ void loop() {
         digitalWrite(LED_PIN, blinkState);
     }
 }
+
+
+float quaterionsToYaw(Quaternion& q) {
+  double siny, cosy;
+  siny = +2.0 * (q.w * q.z + q.x * q.y);
+  cosy = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
+  return atan2(siny, cosy);
+
+}
+
+
+
 
