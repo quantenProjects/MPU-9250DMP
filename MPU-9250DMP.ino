@@ -122,6 +122,10 @@ int16_t mag[3];         // raw magnetometer data
 Quaternion q_mag;       // auxiliary quaternion of a magnetometer
 
 
+double lastYaw = 0;
+long nTimesYaw = 0;
+
+long lastMeasurment = 0;
 
 
 // ================================================================
@@ -293,7 +297,24 @@ void loop() {
             Quaternion q_mag(0.1*phi, 0, 0, 1);                 // create a corrective quaternion
             q = q_mag.getProduct(q);                            // multiply the quaternions to correct the main
 
-            Serial.println(quaterionsToYaw(q));
+            double nowYaw = quaterionsToYaw(q);
+            double diff = lastYaw - nowYaw;
+
+            if (diff < -3.1415926) {
+              nTimesYaw -= 1;
+            } else if (diff > 3.1415926) {
+              nTimesYaw += 1;
+            }
+
+
+            //Serial.print(millis()-lastMeasurment);
+            Serial.print(nTimesYaw);
+            Serial.print("  ");
+            Serial.println(nowYaw);
+            lastMeasurment = millis();
+            
+            lastYaw = nowYaw;
+
             /*
             Serial.print(q.w);
             Serial.print(",");
@@ -338,7 +359,7 @@ void loop() {
 }
 
 
-float quaterionsToYaw(Quaternion& q) {
+double quaterionsToYaw(Quaternion& q) {
   double siny, cosy;
   siny = +2.0 * (q.w * q.z + q.x * q.y);
   cosy = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
