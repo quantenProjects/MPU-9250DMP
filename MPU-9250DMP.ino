@@ -132,10 +132,7 @@ long lastMeasurment = 0;
 // ===               INTERRUPT DETECTION ROUTINE                ===
 // ================================================================
 
-volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin has gone high
-void dmpDataReady() {
-    mpuInterrupt = true;
-}
+
 
 
 
@@ -167,7 +164,6 @@ void setup() {
     // initialize device
     // Serial.println(F("Initializing I2C devices..."));
     mpu.initialize();
-    pinMode(INTERRUPT_PIN, INPUT);
 
     // verify connection
     // Serial.println(F("Testing device connections..."));
@@ -197,7 +193,6 @@ void setup() {
 
         // enable Arduino interrupt detection
         // Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
-        attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
@@ -231,7 +226,7 @@ void loop() {
     if (!dmpReady) return;
 
     // wait for MPU interrupt or extra packet(s) available
-    while (!mpuInterrupt && fifoCount < packetSize) {
+    //while (!mpuInterrupt && fifoCount < packetSize) {
         // other program behavior stuff here
         // .
         // .
@@ -242,10 +237,10 @@ void loop() {
         // .
         // .
         // .
-    }
+    //}
 
     // reset interrupt flag and get INT_STATUS byte
-    mpuInterrupt = false;
+    //mpuInterrupt = false;
     mpuIntStatus = mpu.getIntStatus();
 
     // get current FIFO count

@@ -3051,7 +3051,7 @@ bool MPU9250::writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t b
     return true;
 }
 bool MPU9250::writeProgMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address, bool verify) {
-    return writeMemoryBlock(data, dataSize, bank, address, verify, true);
+    return writeMemoryBlock(data, dataSize, bank, address, verify, false);
 }
 bool MPU9250::writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bool useProgMem) {
     uint8_t *progBuffer, success, special;
@@ -3089,7 +3089,7 @@ bool MPU9250::writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, b
             } else {
                 progBuffer = (uint8_t *)data + i;
             }
-            success = writeMemoryBlock(progBuffer, length, bank, offset, true);
+            success = writeMemoryBlock(progBuffer, length, bank, offset, false);
             i += length;
         } else {
             // special instruction
@@ -3129,7 +3129,7 @@ bool MPU9250::writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, b
     return true;
 }
 bool MPU9250::writeProgDMPConfigurationSet(const uint8_t *data, uint16_t dataSize) {
-    return writeDMPConfigurationSet(data, dataSize, true);
+    return writeDMPConfigurationSet(data, dataSize, false);
 }
 
 // DMP_CFG_1 register
