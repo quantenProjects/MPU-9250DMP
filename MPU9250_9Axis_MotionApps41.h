@@ -126,7 +126,7 @@ int8_t asax, asay, asaz; // вынес данные о заводской чув
 // this block of memory gets written to the MPU on start-up, and it seems
 // to be volatile memory, so it has to be done each time (it only takes ~1
 // second though)
-const unsigned char dmpMemory[MPU9250_DMP_CODE_SIZE] PROGMEM = {
+const unsigned char dmpMemory[MPU9250_DMP_CODE_SIZE] = {
     // bank 0, 256 bytes
     0xFB, 0x00, 0x00, 0x3E, 0x00, 0x0B, 0x00, 0x36, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00,
     0x00, 0x65, 0x00, 0x54, 0xFF, 0xEF, 0x00, 0x00, 0xFA, 0x80, 0x00, 0x0B, 0x12, 0x82, 0x00, 0x01,
@@ -267,7 +267,7 @@ const unsigned char dmpMemory[MPU9250_DMP_CODE_SIZE] PROGMEM = {
     0xDC, 0xB9, 0xA7, 0xF1, 0x26, 0x26, 0x26, 0xD8, 0xD8, 0xFF
 };
 
-const unsigned char dmpConfig[MPU9250_DMP_CONFIG_SIZE] PROGMEM = {
+const unsigned char dmpConfig[MPU9250_DMP_CONFIG_SIZE]  = {
 //  BANK    OFFSET  LENGTH  [DATA]
     0x02,   0xEC,   0x04,   0x00, 0x47, 0x7D, 0x1A,   // ?
     0x03,   0x82,   0x03,   0x4C, 0xCD, 0x6C,         // FCFG_1 inv_set_gyro_calibration
@@ -317,7 +317,7 @@ const unsigned char dmpConfig[MPU9250_DMP_CONFIG_SIZE] PROGMEM = {
     // the FIFO output at the desired rate. Handling FIFO overflow cleanly is also a good idea.
 };
 
-const unsigned char dmpUpdates[MPU9250_DMP_UPDATES_SIZE] PROGMEM = {
+const unsigned char dmpUpdates[MPU9250_DMP_UPDATES_SIZE]  = {
     0x01,   0xB2,   0x02,   0xFF, 0xF5,
     0x01,   0x90,   0x04,   0x0A, 0x0D, 0x97, 0xC0,
     0x00,   0xA3,   0x01,   0x00,
@@ -613,7 +613,7 @@ uint8_t MPU9250::dmpInitialize() {
             DEBUG_PRINTLN(F("Waiting for FIRO count >= 46..."));
             while ((fifoCount = getFIFOCount()) < 46);
             DEBUG_PRINTLN(F("Reading FIFO..."));
-            getFIFOBytes(fifoBuffer, min(fifoCount, 128)); // safeguard only 128 bytes
+            getFIFOBytes(fifoBuffer, localMin(fifoCount, 128)); // safeguard only 128 bytes
             DEBUG_PRINTLN(F("Reading interrupt status..."));
             getIntStatus();
 
@@ -624,13 +624,13 @@ uint8_t MPU9250::dmpInitialize() {
             DEBUG_PRINTLN(F("Waiting for FIRO count >= 48..."));
             while ((fifoCount = getFIFOCount()) < 48);
             DEBUG_PRINTLN(F("Reading FIFO..."));
-            getFIFOBytes(fifoBuffer, min(fifoCount, 128)); // safeguard only 128 bytes
+            getFIFOBytes(fifoBuffer, localMin(fifoCount, 128)); // safeguard only 128 bytes
             DEBUG_PRINTLN(F("Reading interrupt status..."));
             getIntStatus();
             DEBUG_PRINTLN(F("Waiting for FIRO count >= 48..."));
             while ((fifoCount = getFIFOCount()) < 48);
             DEBUG_PRINTLN(F("Reading FIFO..."));
-            getFIFOBytes(fifoBuffer, min(fifoCount, 128)); // safeguard only 128 bytes
+            getFIFOBytes(fifoBuffer, localMin(fifoCount, 128)); // safeguard only 128 bytes
             DEBUG_PRINTLN(F("Reading interrupt status..."));
             getIntStatus();
 
@@ -859,6 +859,7 @@ uint8_t MPU9250::dmpReadAndProcessFIFOPacket(uint8_t numPackets, uint8_t *proces
 uint16_t MPU9250::dmpGetFIFOPacketSize() {
     return dmpPacketSize;
 }
+
 
 #endif /* _MPU9250_9AXIS_MOTIONAPPS41_H_ */
 

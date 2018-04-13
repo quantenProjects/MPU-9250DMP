@@ -3152,3 +3152,14 @@ void MPU9250::setDMPConfig2(uint8_t config) {
     I2Cdev::writeByte(devAddr, MPU9250_RA_DMP_CFG_2, config);
 }
 
+
+
+
+uint8_t MPU9250::localMin(int a, int b)
+{
+    // uint8_t bSmall= (uint8_t) b;
+    return (uint8_t) ((b < a) ? b : a);
+}
+
+
+

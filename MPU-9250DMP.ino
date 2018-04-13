@@ -154,7 +154,7 @@ void setup() {
     // really up to you depending on your project)
     Serial.begin(115200);
     while (!Serial); // wait for Leonardo enumeration, others continue immediately
-
+    Serial.println("Boot up");
     // NOTE: 8MHz or slower host processors, like the Teensy @ 3.3v or Ardunio
     // Pro Mini running at 3.3v, cannot handle this baud rate reliably due to
     // the baud timing being too misaligned with processor ticks. You must use
@@ -206,15 +206,23 @@ void setup() {
         // 1 = initial memory load failed
         // 2 = DMP configuration updates failed
         // (if it's going to break, usually the code will be 1)
-        // Serial.print(F("DMP Initialization failed (code "));
-        // Serial.print(devStatus);
+        Serial.print(("DMP Initialization failed (code "));
+        Serial.print(devStatus);
         // Serial.println(F(")"));
     }
 
     // configure LED for output
     pinMode(LED_PIN, OUTPUT);
+    Serial.println("Bootup complete!");
 }
 
+double quaterionsToYaw(Quaternion& q) {
+  double siny, cosy;
+  siny = +2.0 * (q.w * q.z + q.x * q.y);
+  cosy = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
+  return atan2(siny, cosy);
+
+}
 
 
 // ================================================================
@@ -354,13 +362,6 @@ void loop() {
 }
 
 
-double quaterionsToYaw(Quaternion& q) {
-  double siny, cosy;
-  siny = +2.0 * (q.w * q.z + q.x * q.y);
-  cosy = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
-  return atan2(siny, cosy);
-
-}
 
 
 

@@ -1015,6 +1015,8 @@ class MPU9250 {
             uint16_t dmpGetFIFOPacketSize();
         #endif
 
+        static uint8_t localMin(int a, int b);
+
     private:
         uint8_t devAddr;
         uint8_t buffer[14];
