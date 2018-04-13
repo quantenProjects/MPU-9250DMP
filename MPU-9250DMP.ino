@@ -395,7 +395,7 @@ void loop() {
 
 
 void handleRoot() {
-  server.send(200, "text/html", "<h1>You are connected</h1>");
+  server.send(200, "text/html", "<html><head> <meta http-equiv='refresh' content='2' > </head><body><h1>Rotation: " + String(nTimesYaw) + "</h1><h1>Angle: " + String(lastYaw) + "</h1></body></html>");
 }
 
 
