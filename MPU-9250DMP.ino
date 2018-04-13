@@ -80,6 +80,19 @@ MPU9250 mpu;
 
 
 
+
+
+
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h> 
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+
+const char *ssid =     "rotation";
+const char *password = "noitator";
+
+ESP8266WebServer server(80);
+
 // uncomment "OUTPUT_READABLE_QUATERNION" if you want to see the actual
 // quaternion components in a [w, x, y, z] format (not best for parsing
 // on a remote host such as Processing or something though)
@@ -155,6 +168,23 @@ void setup() {
     Serial.begin(115200);
     while (!Serial); // wait for Leonardo enumeration, others continue immediately
     Serial.println("Boot up");
+
+
+
+    Serial.print("Configuring access point...");
+    /* You can remove the password parameter if you want the AP to be open. */
+    WiFi.softAP(ssid, password);
+    
+    IPAddress myIP = WiFi.softAPIP();
+    Serial.print("AP IP address: ");
+    Serial.println(myIP);
+    if (MDNS.begin("rotation")) {
+      Serial.println("MDNS responder started");
+    }
+    server.on("/", handleRoot);
+    server.begin();
+    Serial.println("HTTP server started");
+    
     // NOTE: 8MHz or slower host processors, like the Teensy @ 3.3v or Ardunio
     // Pro Mini running at 3.3v, cannot handle this baud rate reliably due to
     // the baud timing being too misaligned with processor ticks. You must use
@@ -246,6 +276,8 @@ void loop() {
         // .
         // .
     //}
+
+    server.handleClient();
 
     // reset interrupt flag and get INT_STATUS byte
     //mpuInterrupt = false;
@@ -362,7 +394,9 @@ void loop() {
 }
 
 
-
+void handleRoot() {
+  server.send(200, "text/html", "<h1>You are connected</h1>");
+}
 
 
 
